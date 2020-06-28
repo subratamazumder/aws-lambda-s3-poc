@@ -1,0 +1,27 @@
+# Emulate 20 publishers sending two records per second
+# for 60 seconds.
+config:
+  target: "s3-read-function"
+  lambda:
+    region: "us-east-1"
+  phases:
+    - arrivalCount: 1
+      duration: 1
+  engines:
+    lambda: {}
+
+scenarios:
+  - name: "Invoke function"
+    engine: lambda
+    flow:
+      - count: 60
+        loop:
+        - invoke:
+            # Event, RequestResponse or DryRun
+            clientContext: ""
+            invocationType: "RequestResponse"
+            # Tail or None
+            logType: "None"
+            payload: "{\"bucket-name\":\"subrata-db-bucket\",\"object-key\":\"file4.txt\"}"
+            qualifier: ""
+        - think: 1
